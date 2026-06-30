@@ -19,6 +19,7 @@ dependencies:
   permission_handler: ^12.0.3
   flutter_bloc: ^8.1.6
   equatable: ^2.0.5
+  google_maps_flutter: ^2.9.0
 
 dev_dependencies:
   flutter_test:

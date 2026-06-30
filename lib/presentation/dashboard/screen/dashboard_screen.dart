@@ -9,6 +9,7 @@ import '../widgets/hero_stat_tile.dart';
 import '../bloc/dashboard_bloc.dart';
 import '../bloc/dashboard_event.dart';
 import '../bloc/dashboard_state.dart';
+import '../../map/screen/map_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -42,7 +43,16 @@ class DashboardView extends StatelessWidget {
           IconButton(
             icon: const Icon(LucideIcons.refresh_cw, size: 18),
             onPressed: () => context.read<DashboardBloc>().add(const DataRefreshed()),
-          )
+          ),
+          IconButton(
+            icon: const Icon(LucideIcons.map, size: 18),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MapScreen()),
+              );
+            },
+          ),
         ],
       ),
       body: Column(
