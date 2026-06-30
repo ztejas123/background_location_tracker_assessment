@@ -25,21 +25,8 @@ void onStart(ServiceInstance service) async {
     await service.stopSelf();
   });
 
-  // Check instance status directly without calling method channels
-  Timer.periodic(const Duration(seconds: 60), (timer) async {
-    // If the service is an Android instance, verify it hasn't been closed out externally
-    if (service is AndroidServiceInstance) {
-      if (!(await service.isForegroundService())) {
-        timer.cancel();
-        return;
-      }
-      final rows = await dbHelper.queryAllRows();
-      service.setForegroundNotificationInfo(
-        title: "ENGINE RUNNING",
-        content: "Synchronized logs: ${rows.length} tracking points secured.",
-      );
-    }
-
+  // Capture first location immediately on start
+  Future<void> captureLocation() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
@@ -66,6 +53,27 @@ void onStart(ServiceInstance service) async {
       });
       service.invoke('onLocationUpdated');
     }
+  }
+
+  // Capture first location immediately
+  await captureLocation();
+
+  // Check instance status directly without calling method channels
+  Timer.periodic(const Duration(seconds: 60), (timer) async {
+    // If the service is an Android instance, verify it hasn't been closed out externally
+    if (service is AndroidServiceInstance) {
+      if (!(await service.isForegroundService())) {
+        timer.cancel();
+        return;
+      }
+      final rows = await dbHelper.queryAllRows();
+      service.setForegroundNotificationInfo(
+        title: "ENGINE RUNNING",
+        content: "Synchronized logs: ${rows.length} tracking points secured.",
+      );
+    }
+
+    await captureLocation();
   });
 }
 
